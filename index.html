@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escáner QR</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #video {
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid #000;
+      border-radius: 8px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: green;
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Escáner QR</h1>
+  <video id="video" playsinline></video>
+  <div id="result" class="hidden"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const resultDiv = document.getElementById('result');
+
+    // Solicitar acceso a la cámara
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(function(stream) {
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        video.play();
+        requestAnimationFrame(tick);
+      })
+      .catch(function(err) {
+        console.error("Error al acceder a la cámara:", err);
+        alert("No se pudo acceder a la cámara. Asegúrate de permitir el acceso.");
+      });
+
+    function tick() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code) {
+          resultDiv.textContent = "QR detectado: " + code.data;
+          resultDiv.classList.remove("hidden");
+
+          // Enviar a Google Apps Script
+          fetch('https://script.google.com/macros/s/TU_DEPLOY_ID/exec', {
+            method: 'POST',
+            mode: 'no-cors', // Necesario para GAS
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `data=${encodeURIComponent(code.data)}`
+          }).catch(err => console.error("Error al enviar:", err));
+
+          // Detener escaneo después del primer QR (opcional)
+          // return;
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+  </script>
+</body>
+</html>
