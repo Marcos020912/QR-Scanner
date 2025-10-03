@@ -83,19 +83,16 @@
   </div>
   <video id="video" playsinline></video>
   <div id="result" class="hidden"></div>
-  <button id="resetBtn" class="hidden">Reiniciar Escáner</button>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
     const video = document.getElementById('video');
     const resultDiv = document.getElementById('result');
-    const resetBtn = document.getElementById('resetBtn');
     const spreadsheetUrlInput = document.getElementById('spreadsheetUrl');
     const quantityInput = document.getElementById('quantity');
     const userInput = document.getElementById('user');
     const passwordInput = document.getElementById('password');
     const sendBtn = document.getElementById('sendBtn');
-    let scanningActive = true;
     let scannedData = null;
 
     // Solicitar acceso a la cámara
@@ -110,13 +107,6 @@
         console.error("Error al acceder a la cámara:", error);
         alert("No se pudo acceder a la cámara. Asegúrese de permitir el acceso.");
       });
-
-    resetBtn.addEventListener('click', function() {
-      resultDiv.classList.add('hidden');
-      resetBtn.classList.add('hidden');
-      scanningActive = true;
-      scannedData = null;
-    });
 
     sendBtn.addEventListener('click', function() {
       const spreadsheetUrl = spreadsheetUrlInput.value.trim();
@@ -140,11 +130,10 @@
         body: `spreadsheetUrl=${encodeURIComponent(spreadsheetUrl)}&qrData=${encodeURIComponent(scannedData)}&quantity=${encodeURIComponent(quantity)}&user=${encodeURIComponent(user)}&password=${encodeURIComponent(password)}`
       })
       .then(() => {
-        // Limpiar solo el campo de cantidad y reiniciar escáner
+        // Limpiar solo el campo de cantidad y reiniciar escaneo
         quantityInput.value = '';
+        resultDiv.textContent = '';
         resultDiv.classList.add('hidden');
-        resetBtn.classList.add('hidden');
-        scanningActive = true;
         scannedData = null;
       })
       .catch(error => {
@@ -154,8 +143,6 @@
     });
 
     function tick() {
-      if (!scanningActive) return;
-      
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -171,8 +158,6 @@
         if (code) {
           resultDiv.textContent = "QR detectado: " + code.data;
           resultDiv.classList.remove("hidden");
-          resetBtn.classList.remove("hidden");
-          scanningActive = false; // Detener escaneo hasta que se reinicie
           scannedData = code.data;
         }
       }
