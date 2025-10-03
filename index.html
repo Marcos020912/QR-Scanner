@@ -25,17 +25,54 @@
     .hidden {
       display: none;
     }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .input-group {
+      margin: 15px 0;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .input-group input {
+      width: 100%;
+      max-width: 400px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
   <h1>Escáner QR</h1>
+  <div class="input-group">
+    <label for="spreadsheetUrl">URL de la hoja de cálculo:</label>
+    <input type="text" id="spreadsheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+  </div>
   <video id="video" playsinline></video>
   <div id="result" class="hidden"></div>
+  <button id="resetBtn" class="hidden">Reiniciar Escáner</button>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
     const video = document.getElementById('video');
     const resultDiv = document.getElementById('result');
+    const resetBtn = document.getElementById('resetBtn');
+    const spreadsheetUrlInput = document.getElementById('spreadsheetUrl');
+    let scanningActive = true;
 
     // Solicitar acceso a la cámara
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
@@ -45,12 +82,20 @@
         video.play();
         requestAnimationFrame(tick);
       })
-      .catch(function(err) {
-        console.error("Error al acceder a la cámara:", err);
-        alert("No se pudo acceder a la cámara. Asegúrate de permitir el acceso.");
+      .catch(function(error) {
+        console.error("Error al acceder a la cámara:", error);
+        alert("No se pudo acceder a la cámara. Asegúrese de permitir el acceso.");
       });
 
+    resetBtn.addEventListener('click', function() {
+      resultDiv.classList.add('hidden');
+      resetBtn.classList.add('hidden');
+      scanningActive = true;
+    });
+
     function tick() {
+      if (!scanningActive) return;
+      
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -66,19 +111,25 @@
         if (code) {
           resultDiv.textContent = "QR detectado: " + code.data;
           resultDiv.classList.remove("hidden");
+          resetBtn.classList.remove("hidden");
+          scanningActive = false; // Detener escaneo hasta que se reinicie
 
-          // Enviar a Google Apps Script
-          fetch('https://script.google.com/macros/s/AKfycbzG5WH00sEz0j9mhwBXsZqvwG96PZyql9V97VexgWrTj5g4aGPTIQUURg8LYH8j2aqYow/exec', {
-            method: 'POST',
-            mode: 'no-cors', // Necesario para GAS
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `data=${encodeURIComponent(code.data)}`
-          }).catch(err => console.error("Error al enviar:", err));
-
-          // Detener escaneo después del primer QR (opcional)
-          // return;
+          // Obtener la URL de la hoja de cálculo
+          const spreadsheetUrl = spreadsheetUrlInput.value.trim();
+          
+          // Enviar un script de Google Apps con la URL y los datos del QR
+          if (spreadsheetUrl) {
+            fetch('https://script.google.com/macros/s/AKfycbzG5WH00sEz0j9mhwBXsZqvwG96PZyql9V97VexgWrTj5g4aGPTIQUURg8LYH8j2aqYow/exec', {
+              method: 'POST',
+              mode: 'no-cors', // Necesario para GAS
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: `spreadsheetUrl=${encodeURIComponent(spreadsheetUrl)}&qrData=${encodeURIComponent(code.data)}`
+            }).catch(error => console.error("Error al enviar:", error));
+          } else {
+            console.error("URL de hoja de cálculo no proporcionada");
+          }
         }
       }
       requestAnimationFrame(tick);
