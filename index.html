@@ -4,68 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escáner QR</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    #video {
-      width: 100%;
-      max-width: 500px;
-      border: 2px solid #000;
-      border-radius: 8px;
-    }
-    #result {
-      margin-top: 20px;
-      font-size: 1.2em;
-      color: green;
-      font-weight: bold;
-    }
-    .hidden {
-      display: none;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .input-group {
-      margin: 10px 0;
-    }
-    .input-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .input-group input {
-      width: 100%;
-      max-width: 400px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    .form-container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>Escáner QR</h1>
   <div class="form-container">
     <div class="input-group">
       <label for="spreadsheetUrl">URL de la hoja de cálculo:</label>
-      <input type="text" id="spreadsheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+      <input type="text" id="spreadsheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...  ">
     </div>
     <div class="input-group">
       <label for="quantity">Cantidad de producto:</label>
@@ -85,103 +31,9 @@
   <div id="result" class="hidden"></div>
   <button id="resetBtn" class="hidden">Reiniciar Escáner</button>
 
+  <!-- Carga la librería jsQR -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script>
-    const video = document.getElementById('video');
-    const resultDiv = document.getElementById('result');
-    const resetBtn = document.getElementById('resetBtn');
-    const spreadsheetUrlInput = document.getElementById('spreadsheetUrl');
-    const quantityInput = document.getElementById('quantity');
-    const userInput = document.getElementById('user');
-    const passwordInput = document.getElementById('password');
-    const sendBtn = document.getElementById('sendBtn');
-    let scanningActive = true;
-    let scannedData = null;
-    let stream = null;
-
-    // Solicitar acceso a la cámara
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-      .then(function(mediaStream) {
-        stream = mediaStream;
-        video.srcObject = stream;
-        video.setAttribute("playsinline", true);
-        video.play();
-        requestAnimationFrame(tick);
-      })
-      .catch(function(error) {
-        console.error("Error al acceder a la cámara:", error);
-        alert("No se pudo acceder a la cámara. Asegúrese de permitir el acceso.");
-      });
-
-    resetBtn.addEventListener('click', function() {
-      resultDiv.classList.add('hidden');
-      resetBtn.classList.add('hidden');
-      scanningActive = true;
-      scannedData = null;
-    });
-
-    sendBtn.addEventListener('click', function() {
-      const spreadsheetUrl = spreadsheetUrlInput.value.trim();
-      const quantity = quantityInput.value.trim();
-      const user = userInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      // Validar que todos los campos estén llenos
-      if (!spreadsheetUrl || !quantity || !user || !password || !scannedData) {
-        alert("Por favor complete todos los campos y escanee un código QR.");
-        return;
-      }
-
-      // Enviar solicitud a Google Apps Script
-      fetch('https://script.google.com/macros/s/AKfycbzG5WH00sEz0j9mhwBXsZqvwG96PZyql9V97VexgWrTj5g4aGPTIQUURg8LYH8j2aqYow/exec', {
-        method: 'POST',
-        mode: 'no-cors', // Necesario para GAS
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `spreadsheetUrl=${encodeURIComponent(spreadsheetUrl)}&qrData=${encodeURIComponent(scannedData)}&quantity=${encodeURIComponent(quantity)}&user=${encodeURIComponent(user)}&password=${encodeURIComponent(password)}`
-      })
-      .then(() => {
-        // Limpiar solo el campo de cantidad y reiniciar escáner
-        quantityInput.value = '';
-        resultDiv.classList.add('hidden');
-        resetBtn.classList.add('hidden');
-        scanningActive = true;
-        scannedData = null;
-      })
-      .catch(error => {
-        console.error("Error al enviar:", error);
-        alert("Error al enviar la solicitud. Intente de nuevo.");
-      });
-    });
-
-    function tick() {
-      if (!scanningActive) return;
-      
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
-
-        if (code) {
-          resultDiv.textContent = "QR detectado: " + code.data;
-          resultDiv.classList.remove("hidden");
-          resetBtn.classList.remove("hidden");
-          scanningActive = false; // Detener escaneo hasta que se reinicie
-          scannedData = code.data;
-        }
-      }
-      if (scanningActive) {
-        requestAnimationFrame(tick);
-      }
-    }
-  </script>
+  <!-- Carga tu script principal -->
+  <script src="script.js"></script>
 </body>
 </html>
