@@ -90,3 +90,39 @@ Note: Safari on iOS may require additional configuration for camera access.
 - Form data is sent via HTTPS
 - Input validation is performed before submission
 - Credentials are sent directly to secure endpoint
+
+## Backend Documentation
+
+El backend de esta aplicación está construido con Google Apps Script y proporciona las siguientes funcionalidades:
+
+### Endpoint Principal
+- **Ruta**: `doPost(e)`
+- **Descripción**: Punto de entrada principal para todas las solicitudes POST. Actúa como un enrutador que dirige la solicitud a la función controladora adecuada basándose en el parámetro 'action'.
+
+### Acciones Disponibles
+
+#### Login
+- **Parámetros requeridos**: `user`, `password`
+- **Descripción**: Autentica al usuario verificando sus credenciales contra una hoja de cálculo de usuarios.
+- **Respuesta**: JSON con estado de éxito o error.
+
+#### insertar_compra
+- **Parámetros requeridos**: `spreadsheetUrl`, `qrData`, `quantity`, `user`, `password`
+- **Descripción**: Registra una nueva compra escaneada luego de autenticar al usuario.
+- **Proceso**: 
+  1. Verifica las credenciales del usuario
+  2. Valida que los datos necesarios para la compra estén presentes
+  3. Escribe la información en la hoja de cálculo especificada
+- **Respuesta**: JSON con estado de éxito o error.
+
+### Autenticación
+- **Método**: La autenticación se realiza contra una hoja de cálculo de usuarios alojada en Google Sheets.
+- **Formato**: La hoja contiene columnas para usuario y contraseña.
+- **Seguridad**: Si hay un error al verificar las credenciales, se deniega el acceso por seguridad.
+
+### Estructura de Datos
+Cuando se registra una compra, se almacenan los siguientes datos en la hoja de cálculo:
+- Fecha y hora de registro
+- Dato del código QR escaneado
+- Cantidad
+- Usuario que registró la compra
