@@ -8,6 +8,8 @@ A mobile-friendly QR scanner application that captures QR codes and sends the da
 QR-Scanner/
 ├── index.html              # Main HTML file
 ├── manifest.json           # PWA manifest
+├── README.md               # This file
+├── Qwen.md                 # Project documentation and AI development guidelines
 ├── assets/
 │   ├── icons/
 │   │   └── icon.png       # App icon
