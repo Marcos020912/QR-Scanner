@@ -249,17 +249,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // License Modal Functionality
     const licenseBtn = document.getElementById('licenseBtn');
     const licenseModal = document.getElementById('licenseModal');
-    const closeLicenseBtn = document.querySelector('.close-license');
     const cancelLicenseBtn = document.getElementById('cancelLicenseBtn');
     const licenseForm = document.getElementById('licenseForm');
     const licenseKeyInput = document.getElementById('licenseKey');
 
     licenseBtn.addEventListener('click', function() {
         licenseModal.style.display = 'block';
-    });
-
-    closeLicenseBtn.addEventListener('click', function() {
-        licenseModal.style.display = 'none';
     });
 
     cancelLicenseBtn.addEventListener('click', function() {
