@@ -507,7 +507,7 @@ body.dark-mode .cancel-btn:hover {
 
 .product-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
   padding: 0.75rem;
   background-color: white;
   border: 1px solid #ddd;
@@ -521,6 +521,19 @@ body.dark-mode .cancel-btn:hover {
   text-align: center;
 }
 
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #ff4444;
+  transition: color 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #e03d3d;
+}
+
 /* Dark mode product item */
 body.dark-mode .product-item {
   background-color: #2d2d2d;
@@ -529,6 +542,14 @@ body.dark-mode .product-item {
 
 body.dark-mode .product-item div {
   color: #ffffff;
+}
+
+body.dark-mode .delete-btn {
+  color: #ff4444;
+}
+
+body.dark-mode .delete-btn:hover {
+  color: #e03d3d;
 }
 
 @media (max-width: 768px) {
@@ -548,7 +569,7 @@ body.dark-mode .product-item div {
 
   .product-list-header,
   .product-item {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
     font-size: 0.9rem;
   }
 
@@ -579,8 +600,20 @@ body.dark-mode .product-item div {
 @media (max-width: 480px) {
   .product-list-header,
   .product-item {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr auto;
     gap: 0.5rem;
-    font-size: 0.8rem;
+  }
+
+  .product-list-header .header-column:nth-child(3),
+  .product-list-header .header-column:nth-child(4),
+  .product-list-header .header-column:nth-child(5),
+  .product-item div:nth-child(3),
+  .product-item div:nth-child(4),
+  .product-item div:nth-child(5) {
+    display: none;
+  }
+
+  .delete-btn {
+    font-size: 1rem;
   }
 }

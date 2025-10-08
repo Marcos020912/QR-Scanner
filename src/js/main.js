@@ -212,7 +212,19 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="product-column">${parseFloat(precioUnitario).toFixed(2)}</div>
             <div class="product-column">${moneda}</div>
             <div class="product-column">${precioTotal.toFixed(2)}</div>
+            <div class="product-column">
+                <button class="delete-btn">🗑️</button>
+            </div>
         `;
+
+        // Add event listener for delete button
+        const deleteBtn = productItem.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', function() {
+            if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+                productItem.remove();
+                alert('Producto eliminado exitosamente!');
+            }
+        });
 
         productList.appendChild(productItem);
         
