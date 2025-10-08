@@ -111,10 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
         instructions.style.fontSize = '1.2rem';
         instructions.style.textAlign = 'center';
 
+        const feedbackMessage = document.createElement('p');
+        feedbackMessage.style.color = 'red';
+        feedbackMessage.style.marginTop = '1rem';
+        feedbackMessage.style.textAlign = 'center';
+
         cameraContainer.appendChild(closeCameraBtn);
         cameraContainer.appendChild(cameraElement);
         cameraContainer.appendChild(canvas);
         cameraContainer.appendChild(instructions);
+        cameraContainer.appendChild(feedbackMessage);
         document.body.appendChild(cameraContainer);
 
         const canvasContext = canvas.getContext('2d');
@@ -158,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (code) {
+                    feedbackMessage.textContent = ''; // Clear previous message
                     try {
                         const qrData = JSON.parse(code.data);
                         if (qrData.nombre && qrData.precio !== undefined) {
@@ -166,10 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             alert('Código QR escaneado exitosamente!');
                             stopCamera();
                         } else {
-                           // Maybe show a subtle feedback on the screen
+                            feedbackMessage.textContent = 'Código QR inválido: Faltan los campos "nombre" o "precio".';
                         }
                     } catch (error) {
-                        // Maybe show a subtle feedback on the screen
+                        feedbackMessage.textContent = 'El código QR no contiene un JSON válido. Intentando de nuevo...';
                     }
                 }
             }
