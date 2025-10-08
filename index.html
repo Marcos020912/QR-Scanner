@@ -25,6 +25,9 @@
                 </label>
                 <span>Modo Oscuro</span>
             </div>
+            <div class="dropdown-item" id="licenseBtn">
+                <span>Licencia</span>
+            </div>
         </div>
     </header>
     
@@ -57,7 +60,7 @@
         </div>
     </main>
     
-    <!-- Modal Form -->
+    <!-- Product Modal Form -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -85,6 +88,24 @@
                 <div class="form-buttons">
                     <button type="submit" class="submit-btn">Guardar</button>
                     <button type="button" class="cancel-btn" id="cancelBtn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- License Modal Form -->
+    <div id="licenseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-license">&times;</span>
+            <h2>Licencia</h2>
+            <form id="licenseForm">
+                <div class="form-group">
+                    <label for="licenseKey">Clave de Licencia:</label>
+                    <input type="text" id="licenseKey" name="licenseKey" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">Confirmar</button>
+                    <button type="button" class="cancel-btn" id="cancelLicenseBtn">Cancelar</button>
                 </div>
             </form>
         </div>

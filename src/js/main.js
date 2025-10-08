@@ -245,4 +245,42 @@ document.addEventListener('DOMContentLoaded', function() {
         // Placeholder - currently does nothing
         console.log('Finalizar button clicked - no action defined yet');
     });
+
+    // License Modal Functionality
+    const licenseBtn = document.getElementById('licenseBtn');
+    const licenseModal = document.getElementById('licenseModal');
+    const closeLicenseBtn = document.querySelector('.close-license');
+    const cancelLicenseBtn = document.getElementById('cancelLicenseBtn');
+    const licenseForm = document.getElementById('licenseForm');
+    const licenseKeyInput = document.getElementById('licenseKey');
+
+    licenseBtn.addEventListener('click', function() {
+        licenseModal.style.display = 'block';
+    });
+
+    closeLicenseBtn.addEventListener('click', function() {
+        licenseModal.style.display = 'none';
+    });
+
+    cancelLicenseBtn.addEventListener('click', function() {
+        licenseModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === licenseModal) {
+            licenseModal.style.display = 'none';
+        }
+    });
+
+    licenseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const licenseKey = licenseKeyInput.value.trim();
+        if (licenseKey) {
+            console.log('License Key:', licenseKey);
+            alert('Licencia confirmada!');
+            licenseModal.style.display = 'none';
+        } else {
+            alert('Por favor, ingrese una clave de licencia.');
+        }
+    });
 });
