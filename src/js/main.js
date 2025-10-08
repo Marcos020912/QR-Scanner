@@ -213,13 +213,42 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="product-column">${producto}</div>
             <div class="product-column">${cantidad}</div>
             <div class="product-column">${parseFloat(precioUnitario).toFixed(2)}</div>
+            <div class="product-column">${qrData.moneda || 'USD'}</div>
             <div class="product-column">${precioTotal.toFixed(2)}</div>
+            <div class="product-column">
+                <button class="delete-btn">🗑️</button>
+            </div>
         `;
+
+        // Add event listener for delete button
+        const deleteBtn = productItem.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', function() {
+            if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+                productItem.remove();
+                alert('Producto eliminado exitosamente!');
+            }
+        });
 
         productList.appendChild(productItem);
         
         closeModalAndReset();
 
         alert('Producto agregado exitosamente!');
+    });
+
+    // Add event listener for 'Limpiar' button
+    const clearButton = document.getElementById('clearButton');
+    clearButton.addEventListener('click', function() {
+        if (confirm('¿Está seguro de que desea eliminar todos los productos?')) {
+            productList.innerHTML = '';
+            alert('Todos los productos han sido eliminados.');
+        }
+    });
+
+    // Add event listener for 'Finalizar' button (placeholder)
+    const finishButton = document.getElementById('finishButton');
+    finishButton.addEventListener('click', function() {
+        // Placeholder - currently does nothing
+        console.log('Finalizar button clicked - no action defined yet');
     });
 });
