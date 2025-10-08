@@ -1,128 +1,62 @@
-# QR Scanner App
+# QR-Scaner
 
-A mobile-friendly QR scanner application that captures QR codes and sends the data along with form information to a Google Spreadsheet.
+Welcome to QR-Scaner, a web application for scanning QR codes and managing product inventory.
 
-## Project Structure
+## Project Overview
 
-```
-QR-Scanner/
-├── index.html              # Main HTML file
-├── manifest.json           # PWA manifest
-├── README.md               # This file
-├── Qwen.md                 # Project documentation and AI development guidelines
-├── assets/
-│   ├── icons/
-│   │   └── icon.png       # App icon
-├── src/
-│   ├── css/
-│   │   └── main.css       # Main styles
-│   └── js/
-│       ├── config.js      # Configuration settings
-│       ├── utils.js       # Utility functions
-│       ├── main.js        # Main application module
-│       └── modules/
-│           ├── qrScanner.js    # QR scanning functionality
-│           └── dataService.js  # API service
-```
+This project is designed to help users scan QR codes that contain product information in JSON format (with fields for 'nombre' and 'precio'), and manage their product inventory.
+
+The application features:
+- A clean, modern interface with dark mode support
+- QR code scanning functionality using the device's camera
+- Product management with a simple form for adding products
+- A product list display with columns for Nombre, Cantidad, Precio Unitario, and Precio Total
+
+## Documentation
+
+For detailed information about the project, please refer to the following documentation files:
+
+- [Visual Documentation](visual.md) - Detailed description of all visual elements and design decisions
+- [Logic Documentation](logic.md) - Comprehensive explanation of all functionality and code structure
+
+## Getting Started
+
+To run this project:
+1. Open `index.html` in your web browser
+2. Click the "+" button to add a new product
+3. Use the camera button to scan QR codes or manually enter product details
+4. View your product list with calculated totals
 
 ## Features
 
-- Real-time QR code scanning using device camera
-- Form validation for user inputs
-- Secure data transmission to Google Spreadsheet
-- Responsive design for mobile devices
-- PWA support for offline capability
-- Error handling and user feedback
+### Header
+- Logo and title "QR-Scaner" with Milkshake font
+- Settings button with gear emoji that toggles a dropdown menu for dark mode
 
-## Technologies Used
+### Main Content
+- Circular button with "+" symbol to add new products
+- Product list with columns for: Nombre, Cantidad, Precio Unitario, Precio Total
 
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- jsQR library for QR scanning
-- Google Apps Script for backend processing
+### Modal Form
+- Form with fields for Producto and Cantidad
+- Camera button next to Producto field for scanning QR codes
+- Validation to ensure all fields are filled before submission
+- QR code scanning functionality that validates JSON format with required fields (nombre and precio)
 
-## Setup Instructions
+### Footer
+- Simple footer with copyright information
 
-1. Clone the repository
-2. Open `index.html` in a web browser
-3. Grant camera access when prompted
+## Technical Details
 
-## Usage
+This project is built with HTML, CSS, and JavaScript. It uses vanilla JavaScript without any external libraries for simplicity and compatibility.
 
-1. Enter the Google Spreadsheet URL
-2. Fill in quantity, username and password
-3. Point camera at QR code
-4. Click "Enviar Solicitud" to send data
+## Future Enhancements
 
-## Configuration
+Potential future features include:
+- Saving product data to localStorage or a backend database
+- Editing existing products
+- Deleting products from the list
+- Exporting product list to CSV or PDF
+- More sophisticated QR code scanning with actual library integration
 
-All configuration settings are in `src/js/config.js`:
-- API endpoint URL
-- Camera constraints
-- Validation rules
-- User messages
-
-## Modules
-
-### QRScanner
-Handles camera access and QR code scanning functionality.
-
-### DataService
-Manages API requests and data transmission.
-
-### Utils
-Provides utility functions for form validation, encoding, and UI updates.
-
-### CONFIG
-Centralized configuration for all app settings.
-
-## Browser Compatibility
-
-- Chrome (Mobile & Desktop)
-- Firefox (Mobile & Desktop)
-- Edge (Mobile & Desktop)
-
-Note: Safari on iOS may require additional configuration for camera access.
-
-## Security Considerations
-
-- Form data is sent via HTTPS
-- Input validation is performed before submission
-- Credentials are sent directly to secure endpoint
-
-## Backend Documentation
-
-El backend de esta aplicación está construido con Google Apps Script y proporciona las siguientes funcionalidades:
-
-### Endpoint Principal
-- **Ruta**: `doPost(e)`
-- **Descripción**: Punto de entrada principal para todas las solicitudes POST. Actúa como un enrutador que dirige la solicitud a la función controladora adecuada basándose en el parámetro 'action'.
-
-### Acciones Disponibles
-
-#### Login
-- **Parámetros requeridos**: `user`, `password`
-- **Descripción**: Autentica al usuario verificando sus credenciales contra una hoja de cálculo de usuarios.
-- **Respuesta**: JSON con estado de éxito o error.
-
-#### insertar_compra
-- **Parámetros requeridos**: `spreadsheetUrl`, `qrData`, `quantity`, `user`, `password`
-- **Descripción**: Registra una nueva compra escaneada luego de autenticar al usuario.
-- **Proceso**: 
-  1. Verifica las credenciales del usuario
-  2. Valida que los datos necesarios para la compra estén presentes
-  3. Escribe la información en la hoja de cálculo especificada
-- **Respuesta**: JSON con estado de éxito o error.
-
-### Autenticación
-- **Método**: La autenticación se realiza contra una hoja de cálculo de usuarios alojada en Google Sheets.
-- **Formato**: La hoja contiene columnas para usuario y contraseña.
-- **Seguridad**: Si hay un error al verificar las credenciales, se deniega el acceso por seguridad.
-
-### Estructura de Datos
-Cuando se registra una compra, se almacenan los siguientes datos en la hoja de cálculo:
-- Fecha y hora de registro
-- Dato del código QR escaneado
-- Cantidad
-- Usuario que registró la compra
+For more detailed information, please see the [Visual Documentation](visual.md) and [Logic Documentation](logic.md) files.
