@@ -6,19 +6,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const darkModeToggle = document.getElementById('darkModeToggle');
     const addButton = document.getElementById('addButton');
     const modal = document.getElementById('modal');
-    const closeModal = document.querySelector('.close');
+    const closeModalBtn = document.querySelector('.close');
     const cancelBtn = document.getElementById('cancelBtn');
     const productForm = document.getElementById('productForm');
     const cameraBtn = document.querySelector('.camera-btn');
     const productoInput = document.getElementById('producto');
     const cantidadInput = document.getElementById('cantidad');
     const productList = document.getElementById('productList');
-    
+
+    let scannedPrice = null;
+    let animationFrameId = null;
+
     // Toggle dropdown menu when settings button is clicked
     settingsBtn.addEventListener('click', function() {
         dropdownMenu.classList.toggle('show');
     });
-    
+
     // Close dropdown when clicking outside of it
     window.addEventListener('click', function(event) {
         if (!event.target.matches('#settingsBtn') && !event.target.closest('.dropdown-menu')) {
@@ -27,49 +30,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Handle dark mode toggle
-    darkModeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        
-        // Save user preference
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
-        
-        // Update the text of the toggle button
-        this.textContent = isDarkMode ? '🌙 Modo Oscuro (Activado)' : '☀️ Modo Oscuro (Desactivado)';
+    darkModeToggle.addEventListener('change', function() {
+        document.body.classList.toggle('dark-mode', this.checked);
+        localStorage.setItem('darkMode', this.checked);
     });
-    
+
     // Check for saved user preference on page load
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-    if (savedDarkMode) {
-        document.body.classList.add('dark-mode');
-        darkModeToggle.textContent = '🌙 Modo Oscuro (Activado)';
+    darkModeToggle.checked = savedDarkMode;
+    document.body.classList.toggle('dark-mode', savedDarkMode);
+
+    // Function to close the modal and reset state
+    function closeModalAndReset() {
+        modal.style.display = 'none';
+        productForm.reset();
+        scannedPrice = null; // Reset price if the user cancels
     }
-    
+
     // Handle modal functionality
     addButton.addEventListener('click', function() {
         modal.style.display = 'block';
     });
-    
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-    
-    cancelBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-    
+
+    closeModalBtn.addEventListener('click', closeModalAndReset);
+    cancelBtn.addEventListener('click', closeModalAndReset);
+
     // Close modal if user clicks outside of it
     window.addEventListener('click', function(event) {
         if (event.target === modal) {
-            modal.style.display = 'none';
+            closeModalAndReset();
         }
     });
-    
+
     // Camera button functionality for QR code scanning
     cameraBtn.addEventListener('click', function() {
-        // Create a container for the camera stream
         const cameraContainer = document.createElement('div');
         cameraContainer.id = 'camera-container';
         cameraContainer.style.position = 'fixed';
@@ -83,8 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cameraContainer.style.flexDirection = 'column';
         cameraContainer.style.justifyContent = 'center';
         cameraContainer.style.alignItems = 'center';
-        
-        // Add close button for camera
+
         const closeCameraBtn = document.createElement('button');
         closeCameraBtn.textContent = 'Cerrar Cámara';
         closeCameraBtn.style.position = 'absolute';
@@ -98,8 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         closeCameraBtn.style.cursor = 'pointer';
         closeCameraBtn.style.fontSize = '1rem';
         closeCameraBtn.style.zIndex = '3001';
-        
-        // Add camera element
+
         const cameraElement = document.createElement('video');
         cameraElement.id = 'camera-stream';
         cameraElement.style.width = '80%';
@@ -107,114 +101,105 @@ document.addEventListener('DOMContentLoaded', function() {
         cameraElement.style.borderRadius = '8px';
         cameraElement.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
         
-        // Add instructions
+        const canvas = document.createElement('canvas');
+        canvas.style.display = 'none';
+
         const instructions = document.createElement('p');
         instructions.textContent = 'Apunta la cámara al código QR para escanearlo';
         instructions.style.color = 'white';
         instructions.style.marginTop = '1rem';
         instructions.style.fontSize = '1.2rem';
         instructions.style.textAlign = 'center';
-        
-        // Add the elements to the container
+
         cameraContainer.appendChild(closeCameraBtn);
         cameraContainer.appendChild(cameraElement);
+        cameraContainer.appendChild(canvas);
         cameraContainer.appendChild(instructions);
-        
-        // Add the container to the body
         document.body.appendChild(cameraContainer);
-        
-        // Function to start the camera stream
+
+        const canvasContext = canvas.getContext('2d');
+
+        function stopCamera() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (cameraElement.srcObject) {
+                cameraElement.srcObject.getTracks().forEach(track => track.stop());
+            }
+            if (document.body.contains(cameraContainer)) {
+                document.body.removeChild(cameraContainer);
+            }
+        }
+
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'environment' }
                 });
                 cameraElement.srcObject = stream;
-                
-                // Start playing the video
+                cameraElement.setAttribute('playsinline', true); // Required for iOS
                 cameraElement.play();
-                
-                // In a real implementation, you would use a QR code scanning library like jsQR
-                // For demo purposes, we'll simulate QR code scanning
-                
-                // Set up a timeout to simulate QR code detection after 3 seconds
-                setTimeout(() => {
-                    // Simulate QR code detection
-                    const simulatedQRData = '{"nombre": "Producto de Ejemplo", "precio": 99.99}';
-                    
-                    try {
-                        // Parse the QR code data as JSON
-                        const qrData = JSON.parse(simulatedQRData);
-                        
-                        // Validate that the JSON has required fields
-                        if (qrData.nombre && qrData.precio !== undefined) {
-                            // Set the producto field with the name from the JSON
-                            productoInput.value = qrData.nombre;
-                            
-                            // Show success message
-                            alert('Código QR escaneado exitosamente!');
-                        } else {
-                            // Show error message for invalid JSON format
-                            alert('El código QR no contiene los campos requeridos (nombre y precio)');
-                        }
-                    } catch (error) {
-                        // Show error message for invalid JSON
-                        alert('El código QR no contiene un JSON válido');
-                    }
-                    
-                    // Close the camera
-                    document.body.removeChild(cameraContainer);
-                }, 3000);
-                
+                animationFrameId = requestAnimationFrame(tick);
             } catch (error) {
                 console.error('Error accessing camera:', error);
                 alert('No se pudo acceder a la cámara. Por favor, permita el acceso a la cámara en su navegador.');
-                document.body.removeChild(cameraContainer);
+                stopCamera();
             }
         }
-        
-        // Start the camera when the camera container is added to the DOM
-        startCamera();
-        
-        // Add event listener to close button
-        closeCameraBtn.addEventListener('click', function() {
-            // Stop the camera stream
-            if (cameraElement.srcObject) {
-                const tracks = cameraElement.srcObject.getTracks();
-                tracks.forEach(track => track.stop());
+
+        function tick() {
+            if (cameraElement.readyState === cameraElement.HAVE_ENOUGH_DATA) {
+                canvas.height = cameraElement.videoHeight;
+                canvas.width = cameraElement.videoWidth;
+                canvasContext.drawImage(cameraElement, 0, 0, canvas.width, canvas.height);
+                const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'dontInvert',
+                });
+
+                if (code) {
+                    try {
+                        const qrData = JSON.parse(code.data);
+                        if (qrData.nombre && qrData.precio !== undefined) {
+                            productoInput.value = qrData.nombre;
+                            scannedPrice = qrData.precio;
+                            alert('Código QR escaneado exitosamente!');
+                            stopCamera();
+                        } else {
+                           // Maybe show a subtle feedback on the screen
+                        }
+                    } catch (error) {
+                        // Maybe show a subtle feedback on the screen
+                    }
+                }
             }
-            
-            // Remove the camera container
-            document.body.removeChild(cameraContainer);
-        });
+            animationFrameId = requestAnimationFrame(tick);
+        }
+
+        startCamera();
+        closeCameraBtn.addEventListener('click', stopCamera);
     });
-    
+
     // Form submission handler
     productForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const producto = productoInput.value.trim();
         const cantidad = cantidadInput.value;
-        
-        // Validate that all fields are filled
+
         if (!producto || !cantidad) {
             alert('Por favor, complete todos los campos del formulario.');
             return;
         }
-        
-        // Get the price from the QR code scan (simulated for now)
-        let precioUnitario = 0;
-        
-        // In a real implementation, you would get the price from the QR code scan
-        // For now, we'll use a default value or calculate based on some logic
-        // Since we're simulating, let's assume the price comes from the QR code
-        // In our simulation, we'll use 99.99 as the price
-        precioUnitario = 99.99;
-        
-        // Calculate total price
+
+        if (scannedPrice === null) {
+            alert('Por favor, escanee un código QR válido para obtener el precio del producto.');
+            return;
+        }
+
+        const precioUnitario = scannedPrice;
         const precioTotal = parseFloat(precioUnitario) * parseInt(cantidad);
-        
-        // Create a new product item
+
         const productItem = document.createElement('div');
         productItem.className = 'product-item';
         productItem.innerHTML = `
@@ -223,15 +208,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="product-column">${parseFloat(precioUnitario).toFixed(2)}</div>
             <div class="product-column">${precioTotal.toFixed(2)}</div>
         `;
-        
-        // Add the product item to the product list
+
         productList.appendChild(productItem);
         
-        // Reset form and close modal
-        productForm.reset();
-        modal.style.display = 'none';
-        
-        // Show success message
+        closeModalAndReset();
+
         alert('Producto agregado exitosamente!');
     });
 });
