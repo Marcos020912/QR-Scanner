@@ -5,6 +5,7 @@
 
 ## Flujo de Trabajo
 - Después de cada modificación de código o cambio en los archivos, actualiza el repositorio de Git creando un commit con un mensaje descriptivo.
+- Después de hacer un commit, actualiza el repositorio remoto.
 
 ## Estilo de Código
 - Sigue estrictamente las convenciones de estilo y formato del código existente para mantener la consistencia. Si el proyecto utiliza una herramienta como Prettier, úsala para formatear el código antes de hacer un commit.
