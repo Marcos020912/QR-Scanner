@@ -204,17 +204,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const precioTotal = parseFloat(precioUnitario) * parseInt(cantidad);
 
-        const productItem = document.createElement('div');
-        productItem.className = 'product-item';
+        const productItem = document.createElement('tr');
         productItem.innerHTML = `
-            <div class="product-column">${producto}</div>
-            <div class="product-column">${cantidad}</div>
-            <div class="product-column">${parseFloat(precioUnitario).toFixed(2)}</div>
-            <div class="product-column">${moneda}</div>
-            <div class="product-column">${precioTotal.toFixed(2)}</div>
-            <div class="product-column">
-                <button class="delete-btn">🗑️</button>
-            </div>
+            <td>${producto}</td>
+            <td>${cantidad}</td>
+            <td>${parseFloat(precioUnitario).toFixed(2)}</td>
+            <td>${moneda}</td>
+            <td>${precioTotal.toFixed(2)}</td>
+            <td><button class="delete-btn">🗑️</button></td>
         `;
 
         // Add event listener for delete button
