@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const productoInput = document.getElementById('producto');
     const cantidadInput = document.getElementById('cantidad');
     const productList = document.getElementById('productList');
+    const precioInput = document.getElementById('precio');
+    const monedaInput = document.getElementById('moneda');
 
-    let scannedPrice = null;
     let animationFrameId = null;
 
     // Toggle dropdown menu when settings button is clicked
@@ -46,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeModalAndReset() {
         modal.style.display = 'none';
         productForm.reset();
-        scannedPrice = null; // Reset price if the user cancels
     }
 
     // Handle modal functionality
@@ -169,7 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         const qrData = JSON.parse(code.data);
                         if (qrData.producto && qrData.precio !== undefined && qrData.moneda !== undefined) {
                             productoInput.value = qrData.producto;
-                            scannedPrice = qrData.precio;
+                            precioInput.value = qrData.precio;
+                            monedaInput.value = qrData.moneda;
                             alert('Código QR escaneado exitosamente!');
                             stopCamera();
                         } else {
@@ -193,18 +194,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const producto = productoInput.value.trim();
         const cantidad = cantidadInput.value;
+        const precioUnitario = precioInput.value;
+        const moneda = monedaInput.value.trim();
 
-        if (!producto || !cantidad) {
+        if (!producto || !cantidad || !precioUnitario || !moneda) {
             alert('Por favor, complete todos los campos del formulario.');
             return;
         }
 
-        if (scannedPrice === null) {
-            alert('Por favor, escanee un código QR válido para obtener el precio del producto.');
-            return;
-        }
-
-        const precioUnitario = scannedPrice;
         const precioTotal = parseFloat(precioUnitario) * parseInt(cantidad);
 
         const productItem = document.createElement('div');
@@ -213,21 +210,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="product-column">${producto}</div>
             <div class="product-column">${cantidad}</div>
             <div class="product-column">${parseFloat(precioUnitario).toFixed(2)}</div>
-            <div class="product-column">${qrData.moneda || 'USD'}</div>
+            <div class="product-column">${moneda}</div>
             <div class="product-column">${precioTotal.toFixed(2)}</div>
-            <div class="product-column">
-                <button class="delete-btn">🗑️</button>
-            </div>
         `;
-
-        // Add event listener for delete button
-        const deleteBtn = productItem.querySelector('.delete-btn');
-        deleteBtn.addEventListener('click', function() {
-            if (confirm('¿Está seguro de que desea eliminar este producto?')) {
-                productItem.remove();
-                alert('Producto eliminado exitosamente!');
-            }
-        });
 
         productList.appendChild(productItem);
         
