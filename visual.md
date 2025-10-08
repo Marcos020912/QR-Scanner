@@ -25,6 +25,7 @@ El proyecto QR-Scaner tiene un diseño moderno y limpio con una paleta de colore
 - **Campos de entrada**: 
   - Producto: Campo de texto con botón de cámara (📷) a la derecha
   - Cantidad: Campo numérico con mínimo de 1
+- **Validación**: El código QR debe contener los campos "producto", "precio" y "moneda" para ser válido
 - **Botones**: 
   - Guardar: Botón azul oscuro con texto blanco
   - Cancelar: Botón gris claro con texto oscuro

@@ -22,8 +22,8 @@ Este documento detalla la funcionalidad y lógica del proyecto QR-Scanner, que p
 - Botón de cámara en el formulario de producto
 - Abre una interfaz de cámara cuando se toca
 - Simula la lectura de un código QR (en implementación real, se usaría una biblioteca como jsQR)
-- Valida que el contenido del QR code sea un JSON válido con campos "nombre" y "precio"
-- Si es válido, rellena el campo "producto" con el valor de "nombre" del JSON
+- Valida que el contenido del QR code sea un JSON válido con campos "producto", "precio" y "moneda"
+- Si es válido, rellena el campo "producto" con el valor de "producto" del JSON
 
 ### 4. Gestión de Productos
 - Formulario para agregar productos con campos: Producto (texto) y Cantidad (número)

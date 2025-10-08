@@ -4,7 +4,7 @@ Welcome to QR-Scaner, a web application for scanning QR codes and managing produ
 
 ## Project Overview
 
-This project is designed to help users scan QR codes that contain product information in JSON format (with fields for 'nombre' and 'precio'), and manage their product inventory.
+This project is designed to help users scan QR codes that contain product information in JSON format (with fields for 'producto', 'precio', and 'moneda'), and manage their product inventory.
 
 The application features:
 - A clean, modern interface with dark mode support
@@ -41,7 +41,7 @@ To run this project:
 - Form with fields for Producto and Cantidad
 - Camera button next to Producto field for scanning QR codes
 - Validation to ensure all fields are filled before submission
-- QR code scanning functionality that validates JSON format with required fields (nombre and precio)
+- QR code scanning functionality that validates JSON format with required fields (producto, precio, and moneda)
 
 ### Footer
 - Simple footer with copyright information

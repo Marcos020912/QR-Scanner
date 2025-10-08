@@ -167,13 +167,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     feedbackMessage.textContent = ''; // Clear previous message
                     try {
                         const qrData = JSON.parse(code.data);
-                        if (qrData.producto && qrData.precio !== undefined && qrData.moneda !== undefined) {
-                            productoInput.value = qrData.producto;
+                        if (qrData.nombre && qrData.precio !== undefined) {
+                            productoInput.value = qrData.nombre;
                             scannedPrice = qrData.precio;
                             alert('Código QR escaneado exitosamente!');
                             stopCamera();
                         } else {
-                            feedbackMessage.textContent = 'Código QR inválido: Faltan los campos "producto", "precio" o "moneda".';
+                            feedbackMessage.textContent = 'Código QR inválido: Faltan los campos "nombre" o "precio".';
                         }
                     } catch (error) {
                         feedbackMessage.textContent = 'El código QR no contiene un JSON válido. Intentando de nuevo...';
